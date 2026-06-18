@@ -125,6 +125,7 @@ def encode(
     license: str | None = None,
     geolocation: dict[str, object] | None = None,
     annotation: AnnotationFields | None = None,
+    segment_annotations: list[dict[str, object]] | None = None,
     antenna: AntennaFields | None = None,
 ) -> SigMFCapture:
     """Encode a SyntheticSignal into SigMF byte streams.
@@ -263,6 +264,13 @@ def encode(
             if ant_key in annotation:
                 ann_segment[f"antenna:{ant_key}"] = annotation[ant_key]
         annotations.append(ann_segment)
+
+    # Segment annotations (ADR-017): per-event spans built from GNU Radio cursor
+    # times / stream tags (see aerolake.producer.annotations). They are already
+    # rendered as SigMF annotation Objects, so they're appended as-is, after the
+    # optional whole-capture annotation. SigMF allows overlapping annotations.
+    if segment_annotations:
+        annotations.extend(segment_annotations)
 
     metadata = {
         "global": global_block,

@@ -83,6 +83,9 @@ a "curated" capture. Four packages under `src/aerolake/`:
   SigMF-conformant `core:geolocation` Point (revalidated via `GeolocationConfig`), or returns
   `None` when there is no fix — avoiding the "GPSD trap" (raw dump / `[lat,lon]` order / fake
   position). The gpsd reader is injectable, so the conversion is tested without a daemon.
+  `annotations.py` (`AnnotationSegment`, ADR-017) is a **pure** bridge turning GNU Radio cursor
+  times (`segment_from_time`) or stream tags (`segments_from_tags`) into SigMF temporal
+  annotation segments; `encode(segment_annotations=…)` appends them to the `annotations` array.
 - **`consumer/`** — `reader.py` (`CaptureReader`): list/inspect/read captures, `read_segment()`
   for **partial/seeked reads** (HTTP Range — fetch only a `start_s`/`duration_s` window, ADR-009),
   plus `validate()` which runs the quality layer and promotes the capture's quality tag. `player.py`
@@ -192,6 +195,7 @@ the code is shaped the way it is — consult them before reversing a design choi
 - ADR-014 — SigMF Collections: group complete Recordings under a prefix into a `.sigmf-collection` (prefix selection, relative stream names, orphans reported)
 - ADR-015 — OOP `SdrRecorder` wrapper over SoapySDR (device lifecycle as one object; injectable `device_opener` for hardware-free tests; `capture_from_sdr` kept as a shim)
 - ADR-016 — SigMF-native geolocation from gpsd (avoid the "GPSD trap": live fix → validated `core:geolocation`, None when no fix; injectable gpsd reader)
+- ADR-017 — segment annotations from GNU Radio cursor times / stream tags (pure `annotations.py` bridge → SigMF `annotations`; `encode(segment_annotations=…)`)
 
 ## Testing notes
 
